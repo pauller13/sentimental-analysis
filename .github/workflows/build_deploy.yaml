@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_IMAGE: ghcr.io/${{ github.event.repository }}
+  DOCKER_IMAGE: ghcr.io/sentimental-analysis
   IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
           docker build -t ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }} .
           docker tag ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }} ${{ env.DOCKER_IMAGE }}:latest
 
-          docker push ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
+          docker push ${{ github.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
           docker push ${{ env.DOCKER_IMAGE }}:latest
 
   deploy-dev:
