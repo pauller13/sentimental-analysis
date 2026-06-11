@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_IMAGE: ghcr.io/sentimental-analysis
+  DOCKER_IMAGE: ghcr.io/pauller13/sentimental-analysis
   IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
 
 jobs:
