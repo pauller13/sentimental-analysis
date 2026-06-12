@@ -22,5 +22,4 @@ class SentimentService:
             if not token.is_punct
             and not token.is_space
         ]
-        print(" ".join(tokens))
         return " ".join(tokens)

@@ -9,21 +9,21 @@ MODEL_PATH = BASE_DIR / "trainings" / "classifier_linear_sentiment.pkl"
 VECTORIZER_PATH = BASE_DIR / "trainings" / "tfidf_vectorizer.pkl"
 
 
-# sentiment_service = SentimentService()
+sentiment_service = SentimentService()
 router = APIRouter(
     prefix="/sentiments",
     tags=["sentiments"],
     responses={404: {"description": "Not found"}},
 )
 
-@router.post("/check-comment-binary", response_model=ResponseSchema)
+@router.post("/check-binary", response_model=ResponseSchema)
 def check_sentence_sentiment(sentence: str):
-    # text = sentiment_service.preprocess_text(text=sentence)
+    text = sentiment_service.preprocess_text(text=sentence)
     with open (MODEL_PATH, 'rb') as file:
         model = pickle.load(file)
     with open (VECTORIZER_PATH, 'rb') as file:
         vectorizer = pickle.load(file)
-    text_vector = vectorizer.transform([sentence])
+    text_vector = vectorizer.transform([text])
     result = model.predict(text_vector)
-    print(result)
-    return ResponseSchema(success=True,message="succes",data=result[0])
+    result = 1 if result[0] == "pos" else 0
+    return ResponseSchema(success=True,message="success",data=result)
