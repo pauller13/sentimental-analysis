@@ -1,0 +1,73 @@
+name: build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DOCKER_IMAGE: ghcr.io/${{github.repository}}
+  IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+
+jobs:
+  build-dev:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+      packages: write
+
+    if: ${{ github.ref_name == 'main' }}
+
+    steps:
+      - name: Récupérer le projet
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Login sur GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+            -u "${{ github.actor }}" \
+            --password-stdin
+
+      - name: Build et Push
+        run: |
+          docker build -t ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }} .
+          docker tag ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }} ${{ env.DOCKER_IMAGE }}:latest
+
+          docker push ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.DOCKER_IMAGE }}:latest
+
+  deploy-dev:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: write
+
+    if: ${{ github.ref_name == 'main' }}
+
+    needs:
+      - build-dev
+
+    steps:
+      - name: Récupérer le projet et passer sur helm
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: helm-dev
+
+      - name: Écrire le helm
+        env:
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        run: |
+          git config user.name "gitops"
+          git config user.email "gitops@gitops.com"
+
+          yq eval -i '
+            .spec.source.helm.parameters[] |=
+            select(.name == "image.tag").value = strenv(IMAGE_TAG)
+          ' helm/mecalink-backend/templates/application.yaml
+
+          git add helm/mecalink-backend/templates/application.yaml
+
+          git commit -m "Update image tag ${IMAGE_TAG}" || exit 0
+
+          git push origin helm-dev
