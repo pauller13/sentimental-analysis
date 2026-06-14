@@ -1,0 +1,4 @@
+replicaCount: 1
+
+enabled:
+    sentimental-analysis: true

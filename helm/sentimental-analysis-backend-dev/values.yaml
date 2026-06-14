@@ -1,0 +1,7 @@
+image:
+  repository: ghcr.io/pauller13/sentimental-analysis
+  tag: latest
+  pullPolicy: Always
+  containerPort: 8000
+replicaCount: 3
+securityContext: {}

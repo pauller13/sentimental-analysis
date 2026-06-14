@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  namespace: sentimental-analysis
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  tls:
+    - hosts:
+      - demo.api.sentimental-analysis
+      secretName: letsencrypt-api-sentimental-analysis
+  ingressClassName: nginx
+  rules:
+    - host: demo.api.sentimental-analysis
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sentimental-analysis-service
+                port:
+                  number: 8000

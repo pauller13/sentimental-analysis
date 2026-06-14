@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sentimental-analysis-backend-deploy
+  namespace: argocd
+spec:
+  destination:
+    namespace: sentimental-analysis
+    server: https://kubernetes.default.svc
+  project: sentimental-analysis
+  source:
+    helm:
+      parameters:
+        - name: image.repository
+          value: ghcr.io/pauller13/sentimental-analysis
+        - name: image.tag
+          value: main-e566637be021e36991b5d58fe2fb68d078ef5b3e
+    path: helm/sentimental-analysis-backend-dev
+    repoURL: https://github.com/pauller13/sentimental-analysis.git
+    targetRevision: helm-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true

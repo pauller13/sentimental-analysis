@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentimental-analysis-deploy
+  namespace: sentimental-analysis
+  labels:
+    app: sentimental-analysis-deploy
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: sentimental-analysis-pod
+  template:
+    metadata:
+      labels:
+        app: sentimental-analysis-pod
+    spec:
+      containers:
+        - name: sentimental-analysis-container
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.image.containerPort }}
+              protocol: TCP
