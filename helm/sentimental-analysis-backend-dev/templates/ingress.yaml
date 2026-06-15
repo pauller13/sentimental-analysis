@@ -10,11 +10,11 @@ metadata:
 spec:
   tls:
     - hosts:
-      - demo.api.sentimental-analysis
+      - demo.api.sentimental-analysis.paullence.link
       secretName: letsencrypt-api-sentimental-analysis
   ingressClassName: nginx
   rules:
-    - host: demo.api.sentimental-analysis
+    - host: demo.api.sentimental-analysis.paullence.link
       http:
         paths:
           - path: /
