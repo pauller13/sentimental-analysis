@@ -23,11 +23,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           resources:               # Limites et demandes de ressources
             requests:
-              cpu: "64m"          # CPU garanti au démarrage
+              cpu: "100m"          # CPU garanti au démarrage
               memory: "128Mi"      # RAM garantie au démarrage
             limits:
-              cpu: "128m"          # CPU max autorisé
-              memory: "256Mi"
+              cpu: "200m"          # CPU max autorisé
+              memory: "384Mi"
           ports:
             - name: http
               containerPort: {{ .Values.image.containerPort }}
