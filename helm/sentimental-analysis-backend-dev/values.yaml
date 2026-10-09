@@ -3,5 +3,5 @@ image:
   tag: latest
   pullPolicy: Always
   containerPort: 8000
-replicaCount: 3
+replicaCount: 1
 securityContext: {}
